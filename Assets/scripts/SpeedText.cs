@@ -5,7 +5,7 @@ public class SpeedText : MonoBehaviour
 {
     private const float KmhPerUnit = 3.6f;
 
-    [SerializeField] private WheelSpinner car;
+    private WheelSpinner car;
     [SerializeField] private TMP_Text label;
     [SerializeField] private float metersPerUnit = 1f;
     [SerializeField] private int decimals = 0;
@@ -24,6 +24,8 @@ public class SpeedText : MonoBehaviour
     private void Awake()
     {
         CacheFormat();
+        GameObject player = GameObject.FindGameObjectWithTag("Target");
+        car = player.GetComponent<WheelSpinner>();
     }
 
     private void Update()
