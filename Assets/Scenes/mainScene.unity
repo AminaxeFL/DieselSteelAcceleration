@@ -3482,7 +3482,7 @@ GameObject:
   - component: {fileID: 791375163}
   m_Layer: 0
   m_Name: base
-  m_TagString: Untagged
+  m_TagString: Target
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6539,7 +6539,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55181d3554b01604aa8ffff3ae3bb994, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpeedText
-  car: {fileID: 1852122313}
   label: {fileID: 1509908126}
   metersPerUnit: 1
   decimals: 0
@@ -6996,7 +6995,7 @@ GameObject:
   - component: {fileID: 1694976096}
   m_Layer: 0
   m_Name: carEmptyBase2
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7488,7 +7487,7 @@ GameObject:
   - component: {fileID: 1852122321}
   m_Layer: 0
   m_Name: base
-  m_TagString: Untagged
+  m_TagString: Target
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8455,7 +8454,7 @@ GameObject:
   - component: {fileID: 1962006870}
   m_Layer: 0
   m_Name: carEmptyBase3
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
