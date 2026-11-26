@@ -1,8 +1,9 @@
+//special thanks to gemini chat gpt, clodkod, grok and yandex alice CLI
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Collections;
-using Unity.VisualScripting;
 
 public class SceneLoader : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class SceneLoader : MonoBehaviour
     private GameObject _player;
 
     private bool _isNextScene = false;
-    private bool _isPerviousScene = false;
+    private bool _isPreviousScene = false;
     private int currentSceneIndex;
 
     private Color backgroundColor;
@@ -27,19 +28,23 @@ public class SceneLoader : MonoBehaviour
 
     private void Update()
     {
+        float changeSpeed = 1f / _changeSceneCooldown;
+
         if (_isNextScene)
         {
 
             _backgroundImage.enabled = true;
-            backgroundColor.a += 1f / _changeSceneCooldown * Time.deltaTime;
+            backgroundColor.a += changeSpeed * Time.deltaTime;
+            backgroundColor.a = Mathf.Clamp01(backgroundColor.a);
             _backgroundImage.color = backgroundColor;
 
         }
-        if (_isPerviousScene)
+        if (_isPreviousScene)
         {
 
             _backgroundImage.enabled = true;
-            backgroundColor.a -= 1f / _changeSceneCooldown * Time.deltaTime;
+            backgroundColor.a -= changeSpeed * Time.deltaTime;
+            backgroundColor.a = Mathf.Clamp01(backgroundColor.a);
             _backgroundImage.color = backgroundColor;
 
         }
@@ -68,6 +73,8 @@ public class SceneLoader : MonoBehaviour
             _isNextScene = true;
             yield return new WaitForSeconds(_changeSceneCooldown);
             _isNextScene = false;
+            backgroundColor.a = 1f;
+            _backgroundImage.color = backgroundColor;
             yield return new WaitForSeconds(0.1f);
             SceneManager.LoadScene(currentSceneIndex + 1);
 
@@ -77,6 +84,7 @@ public class SceneLoader : MonoBehaviour
             _isNextScene = true;
             yield return new WaitForSeconds(_changeSceneCooldown);
             _isNextScene = false;
+            _backgroundImage.color = backgroundColor;
             yield return new WaitForSeconds(0.1f);
             if (currentSceneIndex != 0)
             {
@@ -86,7 +94,7 @@ public class SceneLoader : MonoBehaviour
     }
     IEnumerator StartChangeLoadScreen()
     {
-        _isPerviousScene = true;
+        _isPreviousScene = true;
         if (currentScene.buildIndex != 1)
         {
             if (_player != null)
@@ -96,7 +104,7 @@ public class SceneLoader : MonoBehaviour
         }
         
         yield return new WaitForSeconds(_changeSceneCooldown);
-        _isPerviousScene = false;
+        _isPreviousScene = false;
         _backgroundImage.enabled = false;
     }
 }
