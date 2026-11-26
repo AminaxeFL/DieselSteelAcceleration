@@ -11,13 +11,16 @@ public class CarUpgrade : MonoBehaviour
     [SerializeField] private float upgradeCarBodyPerLevel;
     [SerializeField] private float upgradePodveskaPerLevel;
 
+    [SerializeField] private int maxLevel;
     public int engineLevel = 1;
     public int fuelTankLevel = 1;
     public int carBodyLevel = 1;
     public int podveskaLevel = 1;
 
     private float upgradedEngine;
-    private JointSuspension2D upgradeSuspension;
+    private float upgradedCarBody;
+    private float upgradedFuelTank;
+    private JointSuspension2D upgradedPodveska;
 
     private void Awake()
     {
@@ -28,23 +31,28 @@ public class CarUpgrade : MonoBehaviour
 
     private void Start()
     {
-        upgradeSuspension = wheels.suspension;
-        upgradedEngine = wheelSpinner.maxSpeed + (engineLevel - 1) * upgradeEnginePerLevel;
+        upgradedEngine = wheelSpinner.maxSpeed;
+        upgradedFuelTank = wheelSpinner.maxFuel;
+        upgradedCarBody = carDamage.maxHp;
+        upgradedPodveska = wheels.suspension;
     }
 
-    private void Update()
+    private void Upgrade()
     {
-        if (upgradedEngine > 0f)
-            wheelSpinner.maxSpeed = upgradedEngine;
+        wheels.suspension = upgradedPodveska;
+        wheelSpinner.maxSpeed = upgradedEngine;
+        wheelSpinner.maxFuel = upgradedFuelTank;
+        carDamage.maxHp = upgradedCarBody;
     }
 
     public void UpgradeEngine()
     {
-        if (engineLevel < 5)
+        if (engineLevel < maxLevel)
         {
             engineLevel++;
-            upgradedEngine += upgradeEnginePerLevel;
-            wheelSpinner.maxSpeed = upgradedEngine;
+            upgradedEngine += upgradeEnginePerLevel * engineLevel;
+            Upgrade();
+            Debug.Log(upgradedEngine);
         }
         else
         {
@@ -54,10 +62,12 @@ public class CarUpgrade : MonoBehaviour
 
     public void UpgradeFuelTank()
     {
-        if (fuelTankLevel < 5)
+        if (fuelTankLevel < maxLevel)
         {
             fuelTankLevel++;
-            wheelSpinner.maxFuel += upgradeFuelTankPerLevel * fuelTankLevel;
+            upgradedFuelTank = upgradeFuelTankPerLevel * fuelTankLevel;
+            Upgrade();
+            Debug.Log(upgradedFuelTank);
         }
         else
         {
@@ -67,10 +77,12 @@ public class CarUpgrade : MonoBehaviour
 
     public void UpgradeCarBody()
     {
-        if (carBodyLevel < 5)
+        if (carBodyLevel < maxLevel)
         {
             carBodyLevel++;
-            carDamage.maxHp += upgradeCarBodyPerLevel * carBodyLevel;
+            upgradedCarBody = upgradeCarBodyPerLevel * carBodyLevel;
+            Upgrade();
+            Debug.Log(upgradedCarBody);
         }
         else
         {
@@ -80,11 +92,12 @@ public class CarUpgrade : MonoBehaviour
 
     public void UpgradePodveska()
     {
-        if (podveskaLevel < 5)
+        if (podveskaLevel < maxLevel)
         {
             podveskaLevel++;
-            upgradeSuspension.frequency += upgradePodveskaPerLevel * podveskaLevel;
-            wheels.suspension = upgradeSuspension;
+            upgradedPodveska.frequency = upgradePodveskaPerLevel * podveskaLevel;
+            Upgrade();
+            Debug.Log(upgradedPodveska.frequency);
         }
         else
         {
