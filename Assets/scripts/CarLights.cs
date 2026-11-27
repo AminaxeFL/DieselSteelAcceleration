@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 
 public class CarLights : MonoBehaviour
 {
@@ -21,6 +22,16 @@ public class CarLights : MonoBehaviour
 
     private void Update()
     {
+        if (SceneManager.GetActiveScene().name == "garageScene")
+        {
+            lightsOn = true;
+            lightsValid = true;
+            SetLight(frontLight, true);
+            SetLight(insideLight, false);
+            SetLight(backLight, true);
+            return;
+        }
+
         Apply(Shader.GetGlobalVector(SkySunAzElId).z);
     }
 

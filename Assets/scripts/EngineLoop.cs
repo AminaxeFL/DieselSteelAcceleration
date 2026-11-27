@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EngineLoop : MonoBehaviour
 {
@@ -17,15 +18,70 @@ public class EngineLoop : MonoBehaviour
     private float pitchVelocity;
     private float fuelFadeTimer;
     private bool wasRunning;
+    private Rigidbody2D[] bodies;
+    private Vector3[] initialLocalPositions;
+    private Quaternion[] initialLocalRotations;
+
+    private const string GarageSceneName = "garageScene";
+    private const string MainSceneName = "mainScene";
+    private static readonly Vector3 MainSceneSpawnPosition = new Vector3(20f, 54.0000038f, 0f);
 
     private void Awake()
     {
         if (persistAcrossScenes)
             DontDestroyOnLoad(gameObject);
 
+        CacheBodyTransforms();
         SetupSource();
-        Play();
         source.volume = 0f;
+
+        if (SceneManager.GetActiveScene().name != GarageSceneName)
+            Play();
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void CacheBodyTransforms()
+    {
+        bodies = GetComponentsInChildren<Rigidbody2D>(true);
+        initialLocalPositions = new Vector3[bodies.Length];
+        initialLocalRotations = new Quaternion[bodies.Length];
+
+        for (int i = 0; i < bodies.Length; i++)
+        {
+            initialLocalPositions[i] = bodies[i].transform.localPosition;
+            initialLocalRotations[i] = bodies[i].transform.localRotation;
+        }
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name != MainSceneName)
+            return;
+
+        transform.position = MainSceneSpawnPosition;
+        transform.rotation = Quaternion.identity;
+
+        for (int i = 0; i < bodies.Length; i++)
+        {
+            Rigidbody2D rb = bodies[i];
+            rb.transform.localPosition = initialLocalPositions[i];
+            rb.transform.localRotation = initialLocalRotations[i];
+            rb.position = rb.transform.position;
+            rb.rotation = rb.transform.eulerAngles.z;
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+
+        Physics2D.SyncTransforms();
     }
 
     private void SetupSource()
@@ -39,6 +95,9 @@ public class EngineLoop : MonoBehaviour
     public void Play()
     {
         SetupSource();
+        if (SceneManager.GetActiveScene().name == GarageSceneName)
+            return;
+
         if (!source.isPlaying)
             source.Play();
     }
@@ -50,6 +109,17 @@ public class EngineLoop : MonoBehaviour
 
     private void Update()
     {
+        if (SceneManager.GetActiveScene().name == GarageSceneName && !GarageDrive.EngineStarted)
+        {
+            if (source.isPlaying)
+                source.Stop();
+
+            source.volume = 0f;
+            wasRunning = false;
+            fuelFadeTimer = 0f;
+            return;
+        }
+
         if (!source.isPlaying)
             source.Play();
 

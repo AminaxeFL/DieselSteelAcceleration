@@ -1,19 +1,22 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CarSorting : MonoBehaviour
 {
-    public int depthOrder = -2000;
-    public int wheelDepthOffset = 1;
+    public int depthOrder = -1000;
+    public int mainDepthOrder = -1000;
+    public int garageDepthOrder = 0;
+    public int wheelDepthOffset = -1;
     public SpriteRenderer helm;
     public SpriteRenderer neck;
-    public int helmDepthOffset = 1;
-    public int neckDepthOffset = 2;
+    public int helmDepthOffset = 0;
+    public int neckDepthOffset = 1;
     public SpriteRenderer springRight;
     public SpriteRenderer springLeft;
-    public int springDepthOffset = 3;
+    public int springDepthOffset = 2;
     public SpriteRenderer kopot;
-    public int kopotDepthOffset = 1;
+    public int kopotDepthOffset = 0;
     public string smokeObjectName = "smokeParticles";
     public int smokeDepthOffset = -1;
 
@@ -21,10 +24,47 @@ public class CarSorting : MonoBehaviour
 
     private readonly List<SpriteRenderer> bodyRenderers = new List<SpriteRenderer>();
     private readonly List<SpriteRenderer> wheelRenderers = new List<SpriteRenderer>();
+    private int defaultLayer;
 
     private void Awake()
     {
+        defaultLayer = transform.root.gameObject.layer;
         Rebuild();
+        ApplySceneState(SceneManager.GetActiveScene().name);
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        ApplySceneState(scene.name);
+    }
+
+    private void ApplySceneState(string sceneName)
+    {
+        bool inGarage = sceneName == "garageScene";
+
+        foreach (SpriteRenderer r in helm.GetComponentsInChildren<SpriteRenderer>(true))
+            r.enabled = !inGarage;
+
+        neck.enabled = !inGarage;
+        SetLayerRecursive(transform.root, inGarage ? LayerMask.NameToLayer("carReflection") : defaultLayer);
+        SetDepth(inGarage ? garageDepthOrder : mainDepthOrder);
+    }
+
+    private static void SetLayerRecursive(Transform root, int layer)
+    {
+        root.gameObject.layer = layer;
+        foreach (Transform child in root)
+            SetLayerRecursive(child, layer);
     }
 
     public void Rebuild()
@@ -93,7 +133,8 @@ public class CarSorting : MonoBehaviour
         foreach (SpriteRenderer r in wheelRenderers)
             r.sortingOrder = wheelOrder;
 
-        helm.sortingOrder = bodyOrder - helmDepthOffset;
+        foreach (SpriteRenderer r in helm.GetComponentsInChildren<SpriteRenderer>(true))
+            r.sortingOrder = bodyOrder - helmDepthOffset;
         neck.sortingOrder = bodyOrder - neckDepthOffset;
         springRight.sortingOrder = bodyOrder - springDepthOffset;
         springLeft.sortingOrder = bodyOrder - springDepthOffset;

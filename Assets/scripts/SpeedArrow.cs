@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class SpeedArrow : MonoBehaviour
 {
-    [SerializeField] private WheelSpinner car;
+    private WheelSpinner car;
     [SerializeField] private float minX = -923.34f;
     [SerializeField] private float maxX = -323f;
     [SerializeField] private float smoothTime = 0.15f;
@@ -15,6 +15,9 @@ public class SpeedArrow : MonoBehaviour
 
     private void Awake()
     {
+        GameObject player = GameObject.FindGameObjectWithTag("Target");
+        car = player.GetComponent<WheelSpinner>();
+
         rectTransform = GetComponent<RectTransform>();
         anchoredY = rectTransform.anchoredPosition.y;
 

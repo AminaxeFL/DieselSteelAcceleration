@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ParticleSys : MonoBehaviour
 {
@@ -100,7 +101,7 @@ public class ParticleSys : MonoBehaviour
             Mathf.Clamp01(emitterSpeed / Mathf.Max(speedForMinAlpha, 0.01f))
         );
 
-        if (car.Fuel01 > 0.001f)
+        if (car.Fuel01 > 0.001f && (SceneManager.GetActiveScene().name != "garageScene" || GarageDrive.EngineStarted))
         {
             float rate = Mathf.Max(partRate, MinRate);
             float interval = 1f / rate;

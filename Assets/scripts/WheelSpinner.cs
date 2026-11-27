@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class WheelSpinner : MonoBehaviour
 {
@@ -123,11 +124,12 @@ public class WheelSpinner : MonoBehaviour
 
     private void FixedUpdate()
     {
+        bool inGarage = SceneManager.GetActiveScene().name == "garageScene" && !GarageDrive.EngineStarted;
         int grounded = CountGrounded();
         bool airStop = grounded < 2;
         bool hasFuel = fuel > 0f;
 
-        if (canGo && maxSpeed > 0f && !airStop && hasFuel)
+        if (canGo && !inGarage && maxSpeed > 0f && !airStop && hasFuel)
         {
             targetMotorSpeed = MaxMotorSpeed();
         }

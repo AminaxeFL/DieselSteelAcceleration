@@ -1,5 +1,3 @@
-//special thanks to gemini chat gpt, clodkod, grok and yandex alice CLI
-
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -95,7 +93,7 @@ public class SceneLoader : MonoBehaviour
     IEnumerator StartChangeLoadScreen()
     {
         _isPreviousScene = true;
-        if (currentScene.buildIndex != 1)
+        if (currentScene.buildIndex == 0)
         {
             if (_player != null)
             {

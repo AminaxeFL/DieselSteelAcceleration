@@ -4,6 +4,9 @@ using UnityEngine;
 public class Money : MonoBehaviour
 {
     public static Money Instance { get; private set; }
+    public static float SavedBalance { get; private set; }
+
+    private static bool hasSavedBalance;
 
     public float startMoney = 0f;
 
@@ -17,13 +20,21 @@ public class Money : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        Balance = startMoney;
+
+        if (!hasSavedBalance)
+        {
+            SavedBalance = startMoney;
+            hasSavedBalance = true;
+        }
+
+        Balance = SavedBalance;
         RefreshLabel();
     }
 
     public void AddMoney(float amount)
     {
         Balance += amount;
+        SavedBalance = Balance;
         RefreshLabel();
     }
 
@@ -33,6 +44,7 @@ public class Money : MonoBehaviour
             return false;
 
         Balance -= amount;
+        SavedBalance = Balance;
         RefreshLabel();
         return true;
     }
@@ -40,7 +52,14 @@ public class Money : MonoBehaviour
     public void Bankrot()
     {
         Balance = 0f;
+        SavedBalance = 0f;
         RefreshLabel();
+    }
+
+    public static void SetSavedBalance(float amount)
+    {
+        SavedBalance = amount;
+        hasSavedBalance = true;
     }
 
     private void RefreshLabel()
